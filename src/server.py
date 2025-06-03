@@ -61,57 +61,13 @@ async def lifespan(app: FastAPI):
         )
 
         if api.requires_2fa:
-            logger.warn("Two-factor authentication required.")
-            code = input(
-                "Enter the code you received of one of your approved devices: "
-            )
-            result = api.validate_2fa_code(code)
-            logger.debug("Code validation result: %s" % result)
-
-            if not result:
-                print("Failed to verify security code")
-                sys.exit(1)
-
-            if not api.is_trusted_session:
-                logger.info("Session is not trusted. Requesting trust...")
-                result = api.trust_session()
-                logger.debug("Session trust result %s" % result)
-
-                if not result:
-                    logger.error(
-                        "Failed to request trust. You will likely be prompted for the code again in the coming weeks"
-                    )
+            print("Two-factor authentication required. Did you run scripts/init.py?")
+            sys.exit(1)
         elif api.requires_2sa:
-            import click
-
-            logger.warn("Two-step authentication required. Your trusted devices are:")
-
-            devices = api.trusted_devices
-            for i, device in enumerate(devices):
-                logger.warn(
-                    "  %s: %s"
-                    % (
-                        i,
-                        device.get(
-                            "deviceName", "SMS to %s" % device.get("phoneNumber")
-                        ),
-                    )
-                )
-
-            device = click.prompt("Which device would you like to use?", default=0)
-            device = devices[device]
-            if not api.send_verification_code(device):
-                logger.error("Failed to send verification code")
-                sys.exit(1)
-
-            code = click.prompt("Please enter validation code")
-            if not api.validate_verification_code(device, code):
-                logger.error("Failed to verify verification code")
-                sys.exit(1)
-
-        logger.info("Successfully authenticated to iCloud.")
+            print("Two-step authentication required. Did you run scripts/init.py?")
+            sys.exit(1)
     except Exception as e:
-        logger.error(f"Failed to authenticate to iCloud: {e}", file=sys.stderr)
+        print(f"Failed to authenticate to iCloud: {e}")
         sys.exit(1)
 
     geolocator = Nominatim(user_agent="rayhanadev_iphone_tracker")

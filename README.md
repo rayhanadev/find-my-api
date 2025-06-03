@@ -12,6 +12,30 @@ A minimal FastAPI service that fetches your iPhone’s current GPS coordinates f
 
 ## Setup
 
+### Prerequisites
+
+Make sure you have the following installed:
+- Python 3.12 or later
+- [uv](https://docs.astral.sh/uv/)
+- Docker (optional, for containerized deployment)
+
+### Clone the Repository
+
+Clone the repository and install the dependencies:
+
+```bash
+git clone https://github.com/rayhanadev/find-my-api.git
+cd find-my-api
+```
+
+```bash
+uv venv
+source .venv/bin/activate
+uv install
+```
+
+### Environment Variables
+
 Create a `.env` file in the project root (or set environment variables directly) with the following:
 
 ```
@@ -20,25 +44,23 @@ APPLE_ICLOUD_PASSWORD=
 APPLE_DEVICE_NAME=
 ```
 
+### iCloud Session Initialization
+
+Run the following command to initialize your iCloud session and store the session data:
+
+```bash
+uv run scripts/init.py
+```
+
 ## Running Locally
 
-1. **Install dependencies** (assuming you have Python 3.12+):
-
-   ```bash
-   uv venv
-   source .venv/bin/activate
-   uv install
-   ```
-
-   This installs everything listed in `pyproject.toml` into your virtual environment.
-
-2. **Start the server**:
+1. **Start the server**:
 
    ```bash
    uv run src/server.py
    ```
 
-3. **Test the endpoint**:
+2. **Test the endpoint**:
 
    ```bash
    curl http://localhost:8000/location
@@ -59,24 +81,6 @@ APPLE_DEVICE_NAME=
 
 ## Running with Docker
 
-1. **Build the image** (from the project root):
-
-   ```bash
-   docker build -t find-my-api .
-   ```
-2. **Run the container**, passing in your credentials:
-
-   ```bash
-   docker run -d \
-     -e APPLE_ICLOUD_ID="example@icloud.com" \
-     -e APPLE_ICLOUD_APP_SPECIFIC_PASSWORD="abcd-efgh-ijkl-mnop" \
-     -e APPLE_DEVICE_NAME="iPhone 14 Pro" \
-     -p 8000:8000 \
-     find-my-api
-   ```
-3. **Verify and test**:
-
-   ```bash
-   docker logs -f <container_id>
-   curl http://localhost:8000/location
-   ```
+To run the service as a Docker container, I have provided a `Dockerfile` and `docker-compose.yml`. You can
+build the container or run `docker compose up -d` after setting the environment variables in a `.env` file
+and initializing the iCloud session as described above.
